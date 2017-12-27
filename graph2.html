@@ -9,12 +9,13 @@
     fill: none;
 }
 .label {
-   border:2px solid #BD7969;
-   border-radius:4px;
-   box-shadow:#333333 0px 0px 10px;
+   /*border:2px solid #BD7969;*/
+   /*border-radius:4px;*/
+   /*box-shadow:#333333 0px 0px 10px;*/
    margin:200px auto;
    padding:5px 10px;
-   background:rgba(255, 255, 255, 0.8);
+   /*background:rgba(255, 255, 255, 0.8);*/
+   color: #BD7969;
    position:absolute;
    top:0px;
    left:0px;
@@ -37,37 +38,37 @@
 </style>
 </head>
 <body>
-<svg width="1080" height="700"></svg>
+<svg style="margin-top:150px" width="1080" height="700"></svg>
 <script src="https://code.jquery.com/jquery-1.8.2.min.js"></script>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
 
 
-function showData(obj, t, p) {
-  console.log("d val",t);
-   var coord = d3.mouse(obj);
-   console.log(coord);
-   var label = d3.select(".label");
-   // set label to mouse or near mouse
-   label.style("left", (coord[0] + 100) + "px" );
-   label.style("top", (coord[1] - 175) + "px");
-   $(".label").html("<p>P: "+ p + "% </p><p>T: $"+ t+"</p>");
-   // $(".label").attr("display","block");
-   $(".label").show();
- }
+// function showData(obj, t, p) {
+//   console.log("d val",t);
+//    var coord = d3.mouse(obj);
+//    console.log(coord);
+//    var label = d3.select(".label");
+//    // set label to mouse or near mouse
+//    label.style("left", (coord[0] + 100) + "px" );
+//    label.style("top", (coord[1] - 175) + "px");
+//    $(".label").html("<p>P: "+ p + "% </p><p>T: $"+ t+"</p>");
+//    // $(".label").attr("display","block");
+//    $(".label").show();
+//  }
  
-function hideData() {
-  $(".label").hide();
- }
+// function hideData() {
+//   $(".label").hide();
+//  }
 
 
 var data = [
-  {payout: 0.2,target : 0},
-  {payout: 0.7,target : 40000},
-  {payout: 1.1,target : 66667},
-  {payout: 1.4,target : 76000},
-  {payout: 1.7,target : 93333},
-  {payout: 2.0,target : 120000},
+  {label: '', payout: 0.2,target : 0},
+  {label: 'BEP', payout: 0.7,target : 40000},
+  {label: 'Tier 1', payout: 1.1,target : 66667},
+  {label: 'Tier 2', payout: 1.4,target : 76000},
+  {label: 'Tier 3', payout: 1.7,target : 93333},
+  {label: 'MAX', payout: 2.0,target : 120000},
 ];
 
 var margin = {top: 20, right: 20, bottom: 30, left: 50},
@@ -132,11 +133,22 @@ function make_y_gridlines() {
   svg.append("g")
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(x));
-
+  svg.append("text")             
+      .attr("transform",
+            "translate("+width+" ," + 
+                           (height + margin.top + 20) + ")")
+      .style("text-anchor", "middle")
+      .text("Targets ($)");
   // Add the Y Axis
   svg.append("g")
       .call(d3.axisLeft(y));
-
+  svg.append("text")
+      .attr("transform", "rotate(0)")
+      .attr("y", -25)
+      .attr("x",0 )
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Payout (%)"); 
 // add graph
 svg
  .selectAll("circle")
@@ -146,14 +158,32 @@ svg
  .attr("r", 5)
  .attr("cx", xx)
  .attr("cy", yy)
- .attr("val-x", function(d){ return d.target;})
- .on("mouseover", function(d) { showData(this, d.target, d.payout);})
- .on("mouseout", function(){ hideData();});
- $("body").append("<div class='label' style='display:none'></div>");
+ .attr("val-x", function(d){ return d.target;});
+ // .on("mouseover", function(d) { showData(this, d.target, d.payout);})
+ // .on("mouseout", function(){ hideData();});
+ // $("body").append("<div class='label' style='display:none'></div>");
 
  svg.append("path").attr("d", valueline(data));
 
 
+function addtooltipforce(valuepass) {
+    valuepass.forEach(function(element, i) {
+      // console.log(xx(element[below]),yy(element.target));
+      console.log(i,element);
+      
+      if (i % 2 == 0) {
+        left_coord = xx(element)+55;
+        top_coord = yy(element)-50;  
+      }else {
+        left_coord = xx(element)-35;
+        top_coord = yy(element)-130; 
+      }
+      
+      $("body").append("<div class='label tooltip"+element.below+"' style='left:"+left_coord+"px;top: "+top_coord+"px '><p>"+ element.label + " </p> <p>P: "+ element.payout + "% </p><p>T: $"+ element.target+"</p></div>");
+    });
+ }
+
+addtooltipforce(data);
 
 </script>
 </body>

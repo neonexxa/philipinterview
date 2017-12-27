@@ -27,10 +27,10 @@
   background: #fff;
   border-radius:15px;
    box-shadow:#333333 0px 0px 10px;
-
+  color: #F6776D;
   margin:200px auto;
    padding:5px 10px;
-   width: 50px;
+   width: 45px;
 }
 .label:after {
   top: 100%;
@@ -60,8 +60,8 @@ stroke-width: 2px;
 </style>
 </head>
 <body>
-  <br>
-<svg width="960" height="700"></svg>
+  <h3 style="margin: 50px 50px 0px 50px; color: #A2A3A5">PERFORMANCE GRAPH</h3>
+<svg width="960" height="700" style="margin-top: 140px"></svg>
 <script src="https://code.jquery.com/jquery-1.8.2.min.js"></script>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
@@ -128,8 +128,8 @@ var svg = d3.select("svg")
 // Add the X Axis
   svg.append("g")
       .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x));
-
+      .call(d3.axisBottom(x).ticks(5));
+  $(".tick").find("text").prepend( "Week " );
   // // Add the Y Axis
   // svg.append("g")
   //     .call(d3.axisLeft(y));
@@ -158,7 +158,7 @@ function addtooltipforce(valuepass) {
       // console.log(xx(element[below]),yy(element.target));
       console.log(xx(element),yy(element));
       left_coord = xx(element)+25;
-      top_coord = yy(element)-195;
+      top_coord = yy(element)-5;
       $("body").append("<div class='label tooltip"+element.below+"' style='left:"+left_coord+"px;top: "+top_coord+"px '> $"+element.target+"</div>");
     });
  }
