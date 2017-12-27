@@ -8,9 +8,9 @@
     stroke-width: 2;
     fill: none;
 }
-.label {
+.lssabel {
    /*border:2px solid #EB5743;*/
-   border-radius:15px;
+   /*border-radius:15px;
    box-shadow:#333333 0px 0px 10px;
    margin:200px auto;
    padding:5px 10px;
@@ -20,8 +20,32 @@
    left:0px;
    z-index:10500;
    font-weight:bold;
-   color: #EB5743;
+   color: #EB5743;*/
  }
+ .label {
+  position: absolute;
+  background: #fff;
+  border-radius:15px;
+   box-shadow:#333333 0px 0px 10px;
+
+  margin:200px auto;
+   padding:5px 10px;
+   width: 50px;
+}
+.label:after {
+  top: 100%;
+  left: 50%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+  border-color: rgba(255, 255, 255, 0);
+  border-top-color: #fff;
+  border-width: 5px;
+  margin-left: -5px;
+}
  .line {
 fill: url(#line-gradient);
 stroke: url(#line-gradient);
@@ -133,7 +157,7 @@ function addtooltipforce(valuepass) {
     valuepass.forEach(function(element) {
       // console.log(xx(element[below]),yy(element.target));
       console.log(xx(element),yy(element));
-      left_coord = xx(element)+30;
+      left_coord = xx(element)+25;
       top_coord = yy(element)-195;
       $("body").append("<div class='label tooltip"+element.below+"' style='left:"+left_coord+"px;top: "+top_coord+"px '> $"+element.target+"</div>");
     });
