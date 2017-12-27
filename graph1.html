@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<head>
+  
+
+<style>
+  path { 
+    stroke: white;
+    stroke-width: 2;
+    fill: none;
+}
+.label {
+   border:2px solid steelblue;
+   border-radius:4px;
+   box-shadow:#333333 0px 0px 10px;
+   margin:200px auto;
+   padding:5px 10px;
+   background:rgba(255, 255, 255, 0.8);
+   position:absolute;
+   top:0px;
+   left:0px;
+   z-index:10500;
+   font-weight:bold;
+ }
+ .line {
+fill: url(#line-gradient);
+stroke: url(#line-gradient);
+stroke-width: 2px;
+}
+.area {
+  fill: #FCB284;					
+  stroke-width: 0px;		
+}
+
+
+</style>
+</head>
+<body>
+<svg width="960" height="700"></svg>
+<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+function showData(obj, d) {
+  console.log(obj,d);
+   var coord = d3.mouse(obj);
+   console.log(coord);
+   var label = d3.select(".label");
+   // now we just position the infobox roughly where our mouse is
+   label.style("left", (coord[0] + 100) + "px" );
+   label.style("top", (coord[1] - 175) + "px");
+   $(".label").html(d);
+   // $(".label").attr("display","block");
+   $(".label").show();
+ }
+ 
+function hideData() {
+  $(".label").hide();
+ }
+var data = [
+  {below: 1, target: 1530},
+  {below: 2, target: 1200},
+  {below: 3, target: 1488},
+  {below: 4, target: 1689},
+  {below: 5, target: 1011},
+  {below: 6, target: 1436},
+  {below: 7, target: 1702}
+];
+var margin = {top: 20, right: 20, bottom: 30, left: 50},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+// set the ranges
+// var x = d3.scaleLinear().range([0, width]);
+var x = d3.scaleLinear().range([0, width]);
+var y = d3.scaleLinear().range([height, 0]);
+
+// define the line
+var valueline = d3.line()
+    .x(function(d) { return x(d.below); })
+    .y(function(d) { return y(d.target); })
+    .curve(d3.curveMonotoneX);
+
+var valuearea = d3.area()
+    .x(function(d) { return x(d.below); })
+    .y0(height)
+    .y1(function(d) { return y(d.target); })
+    .curve(d3.curveMonotoneX);
+
+ 
+ function xx(d) { return x(d.below); };
+ function yy(d) { return y(d.target); };
+
+var svg = d3.select("svg")
+    .attr("width", width)
+    .attr("height", "700")
+    .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+  x.domain(d3.extent(data, function(d) { return d.below; }));
+  y.domain([0, d3.max(data, function(d) { return d.target; })]);
+
+// Add the X Axis
+  svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x));
+
+  // // Add the Y Axis
+  // svg.append("g")
+  //     .call(d3.axisLeft(y));
+
+ svg.append("path").attr("d", valueline(data));
+ svg.append("path").attr("class", "area").attr("d", valuearea(data));
+
+// add graph
+svg
+ .selectAll("circle")
+ .data(data)
+ .enter().append("circle")
+ .attr("fill", "#E7593C")
+ .attr("r", 5)
+ .attr("cx", xx)
+ .attr("cy", yy)
+ .attr("val-x", function(d){ return d.below;})
+ .on("mouseover", function(d) { showData(this, d.below);})
+ .on("mouseout", function(){ hideData();});
+ $("body").append("<div class='label' style='display:none'>Test</div>");
+
+
+
+// add color below
+ // svg.append("linearGradient")				
+ //        .attr("id", "line-gradient")			
+ //        .attr("gradientUnits", "userSpaceOnUse")	
+
+
+ //    .selectAll("stop")						
+ //        .data([								
+ //            {offset: "0%", color: "lawngreen"},		
+ //            {offset: "100%", color: "lawngreen"}	
+ //        ])					
+ //    .enter().append("stop")			
+ //        .attr("offset", function(d) { return d.offset; })	
+ //        .attr("stop-color", function(d) { return d.color; });
+
+ //    // Add the valueline path.
+ //    var maxX = x(d3.extent(data, function(d) { return d.below; })[0]);
+ //    console.log(d3.extent(data, function(d) { return d.below; }));
+ //    svg.append("path")
+ //        .attr("class", "line")
+ //        .attr("d", ''+valueline(data)+'L'+maxX+","+y(0)+"L0,"+y(0));
+ //        // console.log(maxX);
+
+
+</script>
+</body>
+</html>

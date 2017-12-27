@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<head>
+  
+
+<style>
+  path { 
+    stroke: white;
+    stroke-width: 2;
+    fill: none;
+}
+.label {
+   border:2px solid steelblue;
+   border-radius:4px;
+   box-shadow:#333333 0px 0px 10px;
+   margin:200px auto;
+   padding:5px 10px;
+   background:rgba(255, 255, 255, 0.8);
+   position:absolute;
+   top:0px;
+   left:0px;
+   z-index:10500;
+   font-weight:bold;
+ }
+ .line {
+fill: url(#line-gradient);
+stroke: url(#line-gradient);
+stroke-width: 2px;
+}
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+.area {
+  fill: url(#area-gradient);					
+  stroke-width: 0px;		
+}
+
+
+</style>
+</head>
+<body>
+<svg width="960" height="700"></svg>
+<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+function showData(obj, d) {
+  console.log(obj,d);
+   var coord = d3.mouse(obj);
+   console.log(coord);
+   var label = d3.select(".label");
+   // now we just position the infobox roughly where our mouse is
+   label.style("left", (coord[0] + 100) + "px" );
+   label.style("top", (coord[1] - 175) + "px");
+   $(".label").html(d);
+   // $(".label").attr("display","block");
+   $(".label").show();
+ }
+ 
+function hideData() {
+  $(".label").hide();
+ }
+var data = [
+  {payout: 0.2, target: 0},
+  {payout: 0.7, target: 40000},
+  {payout: 1.1, target: 66667},
+  {payout: 1.4, target: 76000},
+  {payout: 1.7, target: 93333},
+  {payout: 2.0, target: 120000},
+];
+
+var margin = {top: 20, right: 20, bottom: 30, left: 50},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+// set the ranges
+var x = d3.scaleLinear().range([0, width]);
+var y = d3.scaleLinear().range([height, 0]);
+
+// define the line
+var valueline = d3.line()
+    .x(function(d) { return x(d.payout); })
+    .y(function(d) { return y(d.target); })
+    .curve(d3.curveMonotoneX);
+
+var valuearea = d3.area()
+    .x(function(d) { return x(d.payout); })
+    .y0(height)
+    .y1(function(d) { return y(d.target); })
+    .curve(d3.curveMonotoneX);
+
+ 
+ function xx(d) { return x(d.payout); };
+ function yy(d) { return y(d.target); };
+
+var svg = d3.select("svg")
+    .attr("width", width)
+    .attr("height", "700")
+    .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+  x.domain(d3.extent(data, function(d) { return d.payout; }));
+  y.domain([0, d3.max(data, function(d) { return d.target; })]);
+
+ 
+// Add the X Axis
+  svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x));
+
+  // Add the Y Axis
+  svg.append("g")
+      .call(d3.axisLeft(y));
+
+ svg.append("path").attr("d", valueline(data));
+ svg.append("path").attr("class", "area").attr("d", valuearea(data)).attr("fill", "url(#svgGradient)");
+
+// add graph
+svg
+ .selectAll("circle")
+ .data(data)
+ .enter().append("circle")
+ .attr("fill", "#E7593C")
+ .attr("r", 5)
+ .attr("cx", xx)
+ .attr("cy", yy)
+ .attr("val-x", function(d){ return d.payout;})
+ .on("mouseover", function(d) { showData(this, d.payout);})
+ .on("mouseout", function(){ hideData();});
+ $("body").append("<div class='label' style='display:none'>Test</div>");
+
+
+var defs = svg.append("defs");
+
+var gradient = defs.append("linearGradient")
+   .attr("id", "svgGradient")
+   .attr("x1", "0%")
+   .attr("x2", "100%")
+   .attr("y1", "0%")
+   .attr("y2", "100%");
+
+gradient.append("stop")
+   .attr('class', 'start')
+   .attr("offset", "0%")
+   .attr("stop-color", "red")
+   .attr("stop-opacity", 1);
+
+gradient.append("stop")
+   .attr('class', 'end')
+   .attr("offset", "100%")
+   .attr("stop-color", "blue")
+   .attr("stop-opacity", 1);
+d3.selectAll("#svgGradient")
+  .transition()
+  .attr("x1", "100%")
+  .attr("y1", "0%");
+</script>
+</body>
+</html>
