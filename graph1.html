@@ -9,8 +9,8 @@
     fill: none;
 }
 .label {
-   border:2px solid steelblue;
-   border-radius:4px;
+   /*border:2px solid #EB5743;*/
+   border-radius:15px;
    box-shadow:#333333 0px 0px 10px;
    margin:200px auto;
    padding:5px 10px;
@@ -20,6 +20,7 @@
    left:0px;
    z-index:10500;
    font-weight:bold;
+   color: #EB5743;
  }
  .line {
 fill: url(#line-gradient);
@@ -35,26 +36,27 @@ stroke-width: 2px;
 </style>
 </head>
 <body>
+  <br>
 <svg width="960" height="700"></svg>
 <script src="https://code.jquery.com/jquery-1.8.2.min.js"></script>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
-function showData(obj, d) {
-  console.log(obj,d);
-   var coord = d3.mouse(obj);
-   console.log(coord);
-   var label = d3.select(".label");
-   // now we just position the infobox roughly where our mouse is
-   label.style("left", (coord[0] + 100) + "px" );
-   label.style("top", (coord[1] - 175) + "px");
-   $(".label").html(d);
-   // $(".label").attr("display","block");
-   $(".label").show();
- }
+// function showData(obj, d) {
+//   console.log(obj,d);
+//    var coord = d3.mouse(obj);
+//    console.log(coord);
+//    var label = d3.select(".label");
+//    // now we just position the infobox roughly where our mouse is
+//    label.style("left", (coord[0] + 100) + "px" );
+//    label.style("top", (coord[1] - 175) + "px");
+//    $(".label").html(d);
+//    // $(".label").attr("display","block");
+//    $(".label").show();
+//  }
  
-function hideData() {
-  $(".label").hide();
- }
+// function hideData() {
+//   $(".label").hide();
+//  }
 var data = [
   {below: 1, target: 1530},
   {below: 2, target: 1200},
@@ -90,7 +92,7 @@ var valuearea = d3.area()
  function yy(d) { return y(d.target); };
 
 var svg = d3.select("svg")
-    .attr("width", width)
+    .attr("width", "1000")
     .attr("height", "700")
     .append("g")
     .attr("transform",
@@ -109,6 +111,12 @@ var svg = d3.select("svg")
   //     .call(d3.axisLeft(y));
 
 // add graph
+
+// showData(function(data) { return x(data.below); },function(data){ return data.below;});
+ // path n area must after circle to prevent overlap
+ svg.append("path").attr("d", valueline(data));
+ svg.append("path").attr("class", "area").attr("d", valuearea(data));
+
 svg
  .selectAll("circle")
  .data(data)
@@ -117,17 +125,21 @@ svg
  .attr("r", 5)
  .attr("cx", xx)
  .attr("cy", yy)
- .attr("val-x", function(d){ return d.below;})
- .on("mouseover", function(d) { showData(this, d.below);})
- .on("mouseout", function(){ hideData();});
- $("body").append("<div class='label' style='display:none'>Test</div>");
+ .attr("val-x", function(d){ return d.below;});
+ // .on("mouseover", function(d) { showData(this, d.below);})
+ // .on("mouseout", function(){ hideData();});
 
- // path n area must after circle to prevent overlap
- svg.append("path").attr("d", valueline(data));
- svg.append("path").attr("class", "area").attr("d", valuearea(data));
+function addtooltipforce(valuepass) {
+    valuepass.forEach(function(element) {
+      // console.log(xx(element[below]),yy(element.target));
+      console.log(xx(element),yy(element));
+      left_coord = xx(element)+30;
+      top_coord = yy(element)-195;
+      $("body").append("<div class='label tooltip"+element.below+"' style='left:"+left_coord+"px;top: "+top_coord+"px '> $"+element.target+"</div>");
+    });
+ }
 
-
-
+addtooltipforce(data);
 
 // add color below
  // svg.append("linearGradient")				
